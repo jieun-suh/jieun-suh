@@ -211,6 +211,7 @@ section.block{padding-block:80px;scroll-margin-top:56px}
 .frow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .flbl{flex:none;font-size:var(--fs-xs);color:var(--muted);width:44px;font-weight:700}
 .chip{border:1px solid var(--line);background:var(--bg-2);color:var(--body);border-radius:999px;padding:5px 14px;font-size:var(--fs-sm);cursor:pointer;transition:all .15s}
+.chip[hidden]{display:none}
 .chip:hover{border-color:var(--accent);color:var(--accent)}
 .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .count{font-size:var(--fs-sm);color:var(--muted)}
@@ -754,7 +755,13 @@ footer span{font-size:var(--fs-xs);letter-spacing:.12em;color:var(--muted)}
   var cards=[].slice.call(document.querySelectorAll('.card'));
   var fco='all', ftag='all';
   function visible(){return cards.filter(function(c){return !c.hidden})}
+  function syncTags(){
+    var avail={};cards.forEach(function(c){if(fco==='all'||c.dataset.co===fco)c.dataset.tags.split(' ').forEach(function(t){avail[t]=1})});
+    document.querySelectorAll('.chip[data-ftag]').forEach(function(b){var t=b.dataset.ftag;b.hidden=(t!=='all'&&!avail[t])});
+    if(ftag!=='all'&&!avail[ftag]){ftag='all';press('data-ftag','all')}
+  }
   function apply(){
+    syncTags();
     var n=0;
     cards.forEach(function(c){
       var ok=(fco==='all'||c.dataset.co===fco)&&(ftag==='all'||c.dataset.tags.split(' ').indexOf(ftag)>-1);
